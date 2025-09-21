@@ -3,9 +3,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.forms import model_to_dict
 
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 
 from .models import *
 from .forms import *
@@ -66,31 +67,6 @@ def main_view(request):
     return render(request, 'base.html', context)
 
 
-# def register_view(request):
-#     if request.method == 'POST':
-#         form = RegisterForm(request.POST)
-        
-#         if form.is_valid():
-#             return redirect
-#         else:
-#             form = RegisterForm()
-          
-
-class NumbersAPIView(APIView):
-    def get(self, request):
-        a = AutoNumbers.objects.all()
-        return Response({'numbers': AutoNumbersSerializer(a, many=True).data})
-        
-    
-    def post(self, request):
-        serializer = AutoNumbersSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        
-        post_num = AutoNumbers.objects.create(
-            numbers=request.data['numbers'],
-            is_allowed=request.data['is_allowed'],
-            id=request.data['id']
-        )
-        return Response({'post': AutoNumbersSerializer(post_num).data})
-            
-            
+class AutoNumbersViewSet(viewsets.ModelViewSet):
+    queryset = AutoNumbers.objects.all()
+    serializer_class = AutoNumbersSerializer

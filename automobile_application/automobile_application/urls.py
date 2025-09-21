@@ -18,10 +18,16 @@ from django.contrib import admin
 from django.urls import path, include
 from main.views import *
 
+from rest_framework import routers
+
+router = routers.SimpleRouter()
+router.register(r'numbers', AutoNumbersViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     path('', main_view, name='base'),
-    path('api/v1/autonumlist/', NumbersAPIView.as_view())
+    path('api/v1/', include(router.urls))
+    # path('api/v1/autonumlist/', AutoNumbersViewSet.as_view({'get': 'list'})),
+    # path('api/v1/autonumlist/<int:pk>/', AutoNumbersViewSet.as_view({'put': 'updates'})),
 ]
