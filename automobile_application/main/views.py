@@ -3,11 +3,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.forms import model_to_dict
 
+from rest_framework.authentication import TokenAuthentication
 from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, IsAuthenticated
 from .permissions import *
 
 
@@ -79,7 +80,8 @@ class AutoNumbersAPIList(generics.ListCreateAPIView):
 class AutoNumbersAPIUpdate(generics.RetrieveUpdateAPIView):
     queryset = AutoNumbers.objects.all()
     serializer_class = AutoNumbersSerializer
-    permission_classes = (IsOwnerOrReadOnly, )
+    permission_classes = (IsAuthenticated, )
+    # authentication_classes = (TokenAuthentication, )
 
 
 class AutoNumbersAPIDestroy(generics.RetrieveDestroyAPIView):
@@ -97,7 +99,8 @@ class CategoryAPIList(generics.ListCreateAPIView):
 class CategoryAPIUpdate(generics.RetrieveUpdateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsOwnerOrReadOnly, )
+    permission_classes = (IsAuthenticated, )
+    # authentication_classes = (TokenAuthentication, )
 
 
 class CategoryAPIDestroy(generics.RetrieveDestroyAPIView):
