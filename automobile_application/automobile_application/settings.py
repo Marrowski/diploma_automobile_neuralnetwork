@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'main',
     'tailwind',
     'theme',
+    'djoser',
     'django_browser_reload',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -143,6 +144,11 @@ NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-        #'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+
+    ],
+
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
     ]
 }

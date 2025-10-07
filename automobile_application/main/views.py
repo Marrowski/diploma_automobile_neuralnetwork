@@ -6,6 +6,9 @@ from django.forms import model_to_dict
 from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
+from .permissions import *
 
 
 from .models import *
@@ -67,6 +70,37 @@ def main_view(request):
     return render(request, 'base.html', context)
 
 
-class AutoNumbersViewSet(viewsets.ModelViewSet):
+class AutoNumbersAPIList(generics.ListCreateAPIView):
     queryset = AutoNumbers.objects.all()
     serializer_class = AutoNumbersSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+
+
+class AutoNumbersAPIUpdate(generics.RetrieveUpdateAPIView):
+    queryset = AutoNumbers.objects.all()
+    serializer_class = AutoNumbersSerializer
+    permission_classes = (IsOwnerOrReadOnly, )
+
+
+class AutoNumbersAPIDestroy(generics.RetrieveDestroyAPIView):
+    queryset = AutoNumbers.objects.all()
+    serializer_class = AutoNumbersSerializer
+    permission_classes = (IsAdminOrReadOnly, )
+
+
+class CategoryAPIList(generics.ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+
+class CategoryAPIUpdate(generics.RetrieveUpdateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsOwnerOrReadOnly, )
+
+
+class CategoryAPIDestroy(generics.RetrieveDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)

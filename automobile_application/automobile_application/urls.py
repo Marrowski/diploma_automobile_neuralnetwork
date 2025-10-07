@@ -20,14 +20,19 @@ from main.views import *
 
 from rest_framework import routers
 
-router = routers.SimpleRouter()
-router.register(r'numbers', AutoNumbersViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     path('', main_view, name='base'),
-    path('api/v1/', include(router.urls))
-    # path('api/v1/autonumlist/', AutoNumbersViewSet.as_view({'get': 'list'})),
-    # path('api/v1/autonumlist/<int:pk>/', AutoNumbersViewSet.as_view({'put': 'updates'})),
+    path('api/v1/numbers/', AutoNumbersAPIList.as_view()),
+    path('api/v1/numbers/<int:pk>/', AutoNumbersAPIUpdate.as_view()),
+    path('api/v1/numbersdelete/<int:pk>/', AutoNumbersAPIDestroy.as_view()),
+    path('api/v1/category/', CategoryAPIList.as_view()),
+    path('api/v1/category/<int:pk>/', CategoryAPIUpdate.as_view()),
+    path('api/v1/categorydelete/<int:pk>/', CategoryAPIDestroy.as_view()),
+    path('api/v1/auth/', include('rest_framework.urls')),
+
+
 ]
