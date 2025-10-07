@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.forms import model_to_dict
 
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import generics, viewsets
 from rest_framework.response import Response
@@ -70,11 +71,23 @@ def main_view(request):
     
     return render(request, 'base.html', context)
 
+class AutoNumbersAPIListPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
+class CategoryAPIListPagination(PageNumberPagination):
+    page_size = 2
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 
 class AutoNumbersAPIList(generics.ListCreateAPIView):
     queryset = AutoNumbers.objects.all()
     serializer_class = AutoNumbersSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, )
+    pagination_class = AutoNumbersAPIListPagination
 
 
 class AutoNumbersAPIUpdate(generics.RetrieveUpdateAPIView):
@@ -94,6 +107,7 @@ class CategoryAPIList(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+    pagination_class = CategoryAPIListPagination
 
 
 class CategoryAPIUpdate(generics.RetrieveUpdateAPIView):
