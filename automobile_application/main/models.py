@@ -30,3 +30,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.category
+
+
+class Logo(models.Model):
+    logo = models.ImageField()

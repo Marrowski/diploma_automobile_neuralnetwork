@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.forms import model_to_dict
+from django.contrib import messages
 
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.authentication import TokenAuthentication
@@ -21,14 +22,14 @@ import requests
 
 def main_view(request):
     # user = User.objects.filter(user=request.user)
-    url = 'https://russianwarship.rip/api/v1/statistics?offset=50&limit=1'
+    url = 'https://russianwarship.rip/api/v2/statistics/latest/'
+    logo = Logo.objects.all()
     
     try:
         response = requests.get(url, timeout=5)
         data_json = response.json()
 
-        record = data_json['data']['records'][0]
-        stats = record['stats']
+        stats = data_json['data']['stats']
 
         units = stats['personnel_units']
         tanks = stats['tanks']
@@ -66,10 +67,43 @@ def main_view(request):
         'uav':uav,
         'sme':sme,
         'subm':submarines,
-        'atgm': atgm
+        'atgm': atgm,
+        'logo': logo
     }
     
     return render(request, 'base.html', context)
+
+
+def register_view(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            p1 = form.cleaned_data.get("password1")
+            p2 = form.cleaned_data.get("password2")
+            if p1 != p2:
+                messages.error(request, "Паролі не співпадають")
+                return redirect("register")
+
+            new_user = form.save(commit=False)
+            new_user.set_password(p1)
+            new_user.save()
+            messages.success(request, 'Реєстрація успішна!')
+            return redirect('base')
+        else:
+            messages.error(request, 'Паролі не співпадають.')
+    else:
+        form = RegisterForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'register.html', context)
+
+
+
+
 
 class AutoNumbersAPIListPagination(PageNumberPagination):
     page_size = 5

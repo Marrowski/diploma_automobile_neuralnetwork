@@ -1,12 +1,11 @@
 from django import forms
+from django.contrib.auth.models import User
 
-class RegisterForm(forms.Form):
-    nickname = forms.CharField(required=True, help_text='Ім`я користувача', max_length=14)
-    email = forms.EmailField(required=True, help_text='Ваш Email', max_length=26)
-    password1 = forms.CharField(required=True, help_text='Пароль', max_length=14)
-    password2 = forms.CharField(required=True, help_text='Повторіть ваш пароль', max_length=14)
-    
+class RegisterForm(forms.ModelForm):
+    password1 = forms.CharField(help_text='Пароль', max_length=14)
+    password2 = forms.CharField(help_text='Повторіть пароль', max_length=14)
+    profile_picture = forms.ImageField()
 
-class LoginForm(forms.Form):
-    nickname = forms.CharField(required=True, help_text='Ім`я користувача')
-    password = forms.CharField(required=True, help_text='Пароль')
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'email')

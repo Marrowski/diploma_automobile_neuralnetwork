@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Форма Реєстрації</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+  <div class="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    
+    <div class="max-w-md w-full bg-white rounded-lg shadow-md p-6 space-y-6">
+      
+      <h2 class="text-2xl font-bold text-center text-gray-800">
+        Реєстрація
+      </h2>
+  
+      <form class="space-y-4" action="#" method="POST" enctype="multipart/form-data">
+
+        <div class="relative">
+          <label for="first_name" class="sr-only">Ваше ім'я</label>
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            name="first_name"
+            id="first_name"
+            required
+            placeholder="Ваше ім'я"
+            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+        </div>
+
+        <div class="relative">
+          <label for="email" class="sr-only">Ваш e-mail</label>
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+            </svg>
+          </div>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            required
+            placeholder="Ваш e-mail"
+            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+        </div>
+
+        <div class="relative">
+          <label for="phone" class="sr-only">Ваш телефон</label>
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+            </svg>
+          </div>
+          <input
+            type="tel"
+            name="phone"
+            id="phone"
+            placeholder="Ваш телефон"
+            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+        </div>
+
+        <div class="relative">
+          <label for="password" class="sr-only">Пароль</label>
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            required
+            placeholder="Пароль"
+            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+        </div>
+
+        <div class="relative">
+          <label for="password2" class="sr-only">Пароль ще раз</label>
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <input
+            type="password"
+            name="password2"
+            id="password2"
+            required
+            placeholder="Пароль ще раз"
+            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+        </div>
+
+        <div>
+          <label for="profile_picture" class="block text-sm font-medium text-gray-700 text-left mb-1">
+            Фото профілю (необов'язково)
+          </label>
+          <input
+            type="file"
+            name="profile_picture"
+            id="profile_picture"
+            accept="image/*"
+            class="block w-full text-sm text-white
+                   file:mr-4 file:py-2 file:px-4
+                   file:rounded-md file:border-0
+                   file:text-sm file:font-semibold
+                   file:bg-blue-600 file:text-white
+                   hover:file:bg-blue-700 cursor-pointer transition-colors duration-200 ease-in-out"
+          >
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Реєстрація
+          </button>
+        </div>
+      </form>
+      
+    </div>
+  </div>
+  
+</body>
+</html>

@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'main',
     'tailwind',
     'theme',
+    'jazzmin',
+    'widget_tweaks',
     'django_browser_reload',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+
 ]
 
 MIDDLEWARE = [

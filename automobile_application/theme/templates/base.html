@@ -13,7 +13,12 @@
 
     <header style="background-color: oklch(78.9% 0.154 211.53);" class="text-white shadow-md">
         <div class="container mx-auto flex items-center justify-between px-4 py-3">
-            <div class="w-24 h-12 rounded-md" style="background-color: oklch(65% 0.154 211.53);"></div>
+             <div class="w-6 h-4 flex items-center justify-center overflow-hidden">
+                <img src="/media/logo.png" alt="Car Detector Logo" class="h-3.5 w-auto object-contain">
+            </div>
+
+
+
             <h1 class="text-2xl font-semibold">Інтегрована система свій/чужий</h1>
             <nav>
                 <a href="#" class="text-blue-200 hover:text-white transition-colors duration-200">Профіль</a>
@@ -77,8 +82,8 @@
             </div>
         </div>
     </header>
-    
 
+    {% block content %}
     <main class="flex-grow container mx-auto px-4 py-12 flex flex-col items-center">
         <div class="flex flex-col md:flex-row gap-6 w-full max-w-5xl">
             <div class="flex-1 bg-blue-100 rounded-lg shadow-md p-6 flex flex-col justify-between min-h-[200px]">
@@ -112,8 +117,10 @@
         </button>
     </main>
 
+    {% endblock %}
+
     <footer style="background-color: oklch(78.9% 0.154 211.53);" class="text-white text-center py-4 mt-auto">
-        &copy; 2025 Мій сайт. Всі права захищені.
+        &copy; 2025 Інтегровна система свій/чужий. Всі права захищені.
     </footer>
 
     {% if debug %}
