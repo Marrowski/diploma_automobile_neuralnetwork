@@ -1,22 +1,20 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Форма Реєстрації</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Реєстрація{% endblock %}
 
-  <div class="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    
-    <div class="max-w-md w-full bg-white rounded-lg shadow-md p-6 space-y-6">
-      
+{% block content %}
+  {% block header_extra %}{% endblock %}
+
+   <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-white">
+
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 space-y-6 border border-gray-200">
+
       <h2 class="text-2xl font-bold text-center text-gray-800">
         Реєстрація
       </h2>
-  
+
       <form class="space-y-4" action="#" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
 
         <div class="relative">
           <label for="first_name" class="sr-only">Ваше ім'я</label>
@@ -31,7 +29,8 @@
             id="first_name"
             required
             placeholder="Ваше ім'я"
-            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900
+                   focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           >
         </div>
 
@@ -49,7 +48,8 @@
             id="email"
             required
             placeholder="Ваш e-mail"
-            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900
+                   focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           >
         </div>
 
@@ -65,7 +65,8 @@
             name="phone"
             id="phone"
             placeholder="Ваш телефон"
-            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900
+                   focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           >
         </div>
 
@@ -82,9 +83,11 @@
             id="password"
             required
             placeholder="Пароль"
-            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900
+                   focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           >
         </div>
+
 
         <div class="relative">
           <label for="password2" class="sr-only">Пароль ще раз</label>
@@ -99,7 +102,8 @@
             id="password2"
             required
             placeholder="Пароль ще раз"
-            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            class="appearance-none rounded-md relative block w-full pl-9 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900
+                   focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           >
         </div>
 
@@ -112,7 +116,7 @@
             name="profile_picture"
             id="profile_picture"
             accept="image/*"
-            class="block w-full text-sm text-white
+            class="block w-full text-sm text-gray-700
                    file:mr-4 file:py-2 file:px-4
                    file:rounded-md file:border-0
                    file:text-sm file:font-semibold
@@ -124,15 +128,14 @@
         <div>
           <button
             type="submit"
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700
+                   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Реєстрація
           </button>
         </div>
       </form>
-      
+
     </div>
   </div>
-  
-</body>
-</html>
+{% endblock %}

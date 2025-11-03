@@ -14,17 +14,43 @@
     <header style="background-color: oklch(78.9% 0.154 211.53);" class="text-white shadow-md">
         <div class="container mx-auto flex items-center justify-between px-4 py-3">
              <div class="w-6 h-4 flex items-center justify-center overflow-hidden">
-                <img src="/media/logo.png" alt="Car Detector Logo" class="h-3.5 w-auto object-contain">
+                <a href="{% url 'base' %}" target="_blank" class="block">
+                    <img src="/media/logo.png" alt="Car Detector Logo" class="h-3.5 w-auto object-contain hover:opacity-90 transition">
+                </a>
             </div>
 
 
 
-            <h1 class="text-2xl font-semibold">Інтегрована система свій/чужий</h1>
-            <nav>
-                <a href="#" class="text-blue-200 hover:text-white transition-colors duration-200">Профіль</a>
-            </nav>
+
+            <a href="{% url 'base' %}" target="_blank"
+             class="text-2xl font-semibold text-white hover:text-blue-200 transition">
+            Інтегрована система свій/чужий
+            </a>
+            <nav class="flex items-center gap-3">
+    {% if user.is_authenticated %}
+        {% if user.userprofile.avatar %}
+            <a href="{% url 'profile' %}" class="block">
+                <img src="{{ user.userprofile.avatar.url }}"
+                     alt="Avatar"
+                     class="w-8 h-8 rounded-full object-cover border border-white hover:scale-105 transition duration-200">
+            </a>
+        {% else %}
+            <a href="{% url 'profile' %}" class="block">
+                <img src="/media/avatars/user.png"
+                     alt="Default Avatar"
+                     class="w-8 h-8 rounded-full object-cover border border-white hover:scale-105 transition duration-200">
+            </a>
+        {% endif %}
+    {% else %}
+        <a href="{% url 'register' %}" class="text-blue-100 hover:text-white transition text-sm">
+            Вхід / Реєстрація
+        </a>
+    {% endif %}
+</nav>
+
         </div>
-    
+
+    {% block header_extra %}
         <div class="container mx-auto px-4 pb-4">
             <h2 class="text-lg font-semibold mb-2">Втрати росії проти України</h2>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 text-center text-sm">
@@ -81,10 +107,11 @@
                 </div>
             </div>
         </div>
+    {% endblock %}
     </header>
 
-    {% block content %}
     <main class="flex-grow container mx-auto px-4 py-12 flex flex-col items-center">
+        {% block content %}
         <div class="flex flex-col md:flex-row gap-6 w-full max-w-5xl">
             <div class="flex-1 bg-blue-100 rounded-lg shadow-md p-6 flex flex-col justify-between min-h-[200px]">
                 <h2 class="text-xl font-semibold mb-2">Швидка робота</h2>
@@ -115,9 +142,8 @@
         <button type="button" class="mt-8 px-6 py-3 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors duration-200">
             Почати
         </button>
+        {% endblock %}
     </main>
-
-    {% endblock %}
 
     <footer style="background-color: oklch(78.9% 0.154 211.53);" class="text-white text-center py-4 mt-auto">
         &copy; 2025 Інтегровна система свій/чужий. Всі права захищені.

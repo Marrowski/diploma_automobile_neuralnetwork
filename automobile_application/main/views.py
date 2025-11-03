@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.forms import model_to_dict
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.authentication import TokenAuthentication
@@ -75,33 +76,36 @@ def main_view(request):
 
 
 def register_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = RegisterForm(request.POST, request.FILES)
-
         if form.is_valid():
-            p1 = form.cleaned_data.get("password1")
-            p2 = form.cleaned_data.get("password2")
-            if p1 != p2:
-                messages.error(request, "Паролі не співпадають")
-                return redirect("register")
-
-            new_user = form.save(commit=False)
-            new_user.set_password(p1)
-            new_user.save()
-            messages.success(request, 'Реєстрація успішна!')
-            return redirect('base')
-        else:
-            messages.error(request, 'Паролі не співпадають.')
+            form.save()
+            messages.success(request, "Реєстрація успішна!")
+            return redirect("base")
+        messages.error(request, "Перевірте правильність заповнення форми.")
     else:
         form = RegisterForm()
+
+    return render(request, "register.html", {"form": form})
+
+@login_required
+def user_profile(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Профіль оновлено.")
+            return redirect("profile")
+        messages.error(request, "Перевірте поля форми.")
+    else:
+        form = UserProfileForm(instance=profile)
 
     context = {
         'form': form
     }
-
-    return render(request, 'register.html', context)
-
-
+    return render(request, "profile.html", context)
 
 
 
