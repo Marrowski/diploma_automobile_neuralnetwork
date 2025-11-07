@@ -108,6 +108,12 @@ def user_profile(request):
     return render(request, "profile.html", context)
 
 
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('base')
+
+
 
 class AutoNumbersAPIListPagination(PageNumberPagination):
     page_size = 5
