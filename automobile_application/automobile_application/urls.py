@@ -38,7 +38,9 @@ urlpatterns = [
     path('api/v1/auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
     path('register/', register_view, name='register'),
-    path('profile/', user_profile, name='profile')
+    path('profile/', user_profile, name='profile'),
+    path('logout/', logout_view, name='logout'),
+    path('login/', login_view, name='login')
 ]
 
 if settings.DEBUG:

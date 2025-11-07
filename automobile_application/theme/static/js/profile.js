@@ -1,21 +1,40 @@
-<script>
-  (function () {
-    const btn  = document.getElementById('userMenuButton');
-    const menu = document.getElementById('userMenu');
-    if (!btn || !menu) return;
+// Чекаємо, поки вся сторінка завантажиться
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Знаходимо кнопку (аватар) та саме меню за їх ID
+    const menuButton = document.getElementById('userMenuButton');
+    const userMenu = document.getElementById('userMenu');
 
-    function closeMenu() {
-      menu.classList.add('hidden');
-      btn.setAttribute('aria-expanded', 'false');
-    }
-    function toggleMenu(e) {
-      e.stopPropagation();
-      menu.classList.toggle('hidden');
-      btn.setAttribute('aria-expanded', menu.classList.contains('hidden') ? 'false' : 'true');
-    }
+    // Перевіряємо, чи обидва елементи існують на сторінці
+    if (menuButton && userMenu) {
+        
+        // 1. Обробник кліку на кнопку (аватар)
+        menuButton.addEventListener('click', (event) => {
+            // Зупиняємо "спливання" події, щоб клік не передався документу
+            event.stopPropagation(); 
+            
+            // Перемикаємо клас 'hidden', щоб показати або приховати меню
+            userMenu.classList.toggle('hidden');
+            
+            // Оновлюємо атрибут aria-expanded для доступності (для скрін-рідерів)
+            const isExpanded = !userMenu.classList.contains('hidden');
+            menuButton.setAttribute('aria-expanded', isExpanded.toString());
+        });
 
-    btn.addEventListener('click', toggleMenu);
-    document.addEventListener('click', () => { if (!menu.classList.contains('hidden')) closeMenu(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
-  })();
-</script>
+        // 2. Обробник кліку на будь-яке місце в документі
+        document.addEventListener('click', () => {
+            // Якщо меню *не* приховане, ми його приховуємо
+            if (!userMenu.classList.contains('hidden')) {
+                userMenu.classList.add('hidden');
+                menuButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // 3. Обробник кліку на саме меню
+        // (Потрібно, щоб клік по посиланню "Профіль" не закривав меню)
+        userMenu.addEventListener('click', (event) => {
+            // Зупиняємо "спливання" події, щоб документ не отримав цей клік
+            event.stopPropagation();
+        });
+    }
+});
