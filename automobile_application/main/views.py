@@ -14,17 +14,21 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, IsAuthenticated
 from .permissions import *
 
-
 from .models import *
 from .forms import *
 from .serializers import *
 
 import requests
 
+
 def main_view(request):
-    # user = User.objects.filter(user=request.user)
     url = 'https://russianwarship.rip/api/v2/statistics/latest/'
     logo = Logo.objects.all()
+    prof_pic = None
+
+    if request.user.is_authenticated:
+        prof_pic = UserProfile.objects.filter(user=request.user).first()
+
     
     try:
         response = requests.get(url, timeout=5)
@@ -69,7 +73,8 @@ def main_view(request):
         'sme':sme,
         'subm':submarines,
         'atgm': atgm,
-        'logo': logo
+        'logo': logo,
+        'prof_pic': prof_pic
     }
     
     return render(request, 'base.html', context)
@@ -79,14 +84,20 @@ def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            new_user = form.save()
+            login(request, new_user)
             messages.success(request, "Реєстрація успішна!")
             return redirect("base")
         messages.error(request, "Перевірте правильність заповнення форми.")
     else:
         form = RegisterForm()
 
-    return render(request, "register.html", {"form": form})
+    context = {
+        'form': form
+    }
+
+    return render(request, "register.html", context)
+
 
 @login_required
 def user_profile(request):
@@ -107,6 +118,7 @@ def user_profile(request):
     }
     return render(request, "profile.html", context)
 
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -122,6 +134,7 @@ def login_view(request):
             messages.error(request, 'Невірний логін або пароль')
 
     return render(request, 'login.html')
+
 
 @login_required
 def logout_view(request):

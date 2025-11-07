@@ -24,14 +24,14 @@
             Інтегрована система свій/чужий
             </a>
             <nav class="relative flex items-center gap-3">
-  {% if user.is_authenticated %}
-    <button id="userMenuButton" type="button"
-            class="block rounded-full outline-none ring-0 focus:ring-2 focus:ring-white/60"
-            aria-haspopup="true" aria-expanded="false">
-      <img src="{{ user.userprofile.avatar.url|default:'/media/avatars/user.png' }}"
-           alt="Avatar"
-           class="w-8 h-8 rounded-full object-cover border border-white hover:scale-105 transition duration-200">
-    </button>
+    {% if user.is_authenticated %}
+        <button id="userMenuButton" type="button" class="block rounded-full outline-none ring-0 focus:ring-2 focus:ring-white/60" aria-haspopup="true" aria-expanded="false">
+            {% if prof_pic and prof_pic.avatar %}
+                <img src="{{ prof_pic.avatar.url }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-white hover:scale-105 transition duration-200">
+            {% else %}
+                <img src="/media/avatars/user.png" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-white hover:scale-105 transition duration-200">
+            {% endif %}
+        </button>
 
     <span id="userMenuArrow"
           class="hidden absolute right-2 top-[calc(100%+2px)] h-3 w-3 bg-white rotate-45 shadow z-[9998]"></span>
@@ -40,18 +40,20 @@
          class="hidden absolute right-0 top-[calc(100%+0.5rem)] w-56 origin-top-right
                 rounded-xl bg-white/95 backdrop-blur text-gray-800 shadow-xl ring-1 ring-black/5
                 z-[9999] overflow-hidden">
+
       <div class="px-4 py-3 flex items-center gap-3 bg-gradient-to-r from-blue-50 to-white">
-        <img src="{{ user.userprofile.avatar.url|default:'/media/avatars/user.png' }}"
-             class="w-9 h-9 rounded-full object-cover border border-blue-100" alt="">
+      {% if prof_pic and prof_pic.avatar %}
+            <img src="{{ prof_pic.avatar.url }}" class="w-9 h-9 rounded-full object-cover border border-blue-100" alt="">
+        {% else %}
+            <img src="/media/avatars/user.png" class="w-9 h-9 rounded-full object-cover border border-blue-100" alt="">
+        {% endif %}
         <div class="min-w-0">
-          <p class="text-sm font-semibold truncate">
-            {{ user.get_full_name|default:user.username }}
-          </p>
-          {% if user.email %}
-            <p class="text-xs text-gray-500 truncate">{{ user.email }}</p>
-          {% endif %}
+            <p class="text-sm font-semibold truncate">{{ user.get_full_name|default:user.username }}</p>
+            {% if user.email %}
+                <p class="text-xs text-gray-500 truncate">{{ user.email }}</p>
+            {% endif %}
         </div>
-      </div>
+    </div>
 
       <div class="h-px bg-gray-100"></div>
 
@@ -74,17 +76,13 @@
         </button>
       </form>
     </div>
-  {% else %}
-    <a href="{% url 'register' %}" class="text-blue-100 hover:text-white transition text-sm">
-      Вхід / Реєстрація
-    </a>
-  {% endif %}
-</nav>
-
-
-
-
-        </div>
+    {% else %}
+        <a href="{% url 'register' %}" class="text-blue-100 hover:text-white transition text-sm">
+          Вхід / Реєстрація
+        </a>
+    {% endif %}
+        </nav>
+    </div>
 
     {% block header_extra %}
         <div class="container mx-auto px-4 pb-4">
@@ -115,7 +113,7 @@
                     <div class="opacity-80">ППО</div>
                 </div>
             </div>
-    
+
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-3 text-center text-sm">
                 <div class="bg-blue-900/20 rounded-md p-2">
                     <div class="text-xl font-bold">{{planes}}</div>
