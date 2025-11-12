@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Завантаження файлів{% endblock %}
+
+{% block content %}
+{% block header_extra %}{% endblock %}
+
+<div class="container mx-auto px-4 py-10 max-w-5xl">
+
+  {% if messages %}
+    <div class="max-w-xl mx-auto mb-6 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-xl px-4 py-3 text-sm shadow
+                    {% if 'success' in message.tags %} bg-blue-50 text-blue-900 border border-blue-200
+                    {% elif 'error' in message.tags %} bg-red-50 text-red-900 border border-red-200
+                    {% else %} bg-gray-50 text-gray-800 border border-gray-200 {% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="bg-white/90 text-gray-900 rounded-2xl border border-blue-200 shadow-md p-6 max-w-2xl mx-auto">
+    <h2 class="text-xl font-semibold text-center text-blue-900 mb-4">Завантаження фото/відео</h2>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-5">
+      {% csrf_token %}
+
+
+      <div>
+        <label for="{{ form.auto_file.id_for_label }}"
+               class="block w-full">
+          <div id="dropZone"
+               class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-blue-300
+                      rounded-xl p-6 text-center hover:bg-blue-50 cursor-pointer transition">
+            <svg class="w-8 h-8 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 15v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4H3l9-9 9 9h-2Zm-7-8.17L6.83 12H9v6h6v-6h2.17L12 6.83Z"/>
+            </svg>
+            <div class="text-sm">
+              <span class="font-medium text-blue-700">Натисніть</span> або перетягніть файл сюди
+            </div>
+            <p class="text-xs text-gray-500">Підтримуються зображення та відео</p>
+            <p id="chosenFile" class="text-xs text-blue-700 font-medium hidden"></p>
+          </div>
+        </label>
+        {{ form.auto_file }}
+        {% if form.auto_file.errors %}
+          <p class="mt-1 text-xs text-red-600">{{ form.auto_file.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <div class="pt-2">
+        <button type="submit"
+                class="w-full py-2.5 rounded-lg bg-blue-700 text-white text-sm font-semibold shadow hover:bg-blue-800 transition">
+          Завантажити
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {% if files %}
+    <div class="mt-10">
+      <h3 class="text-lg font-semibold text-blue-900 mb-4">Завантажені файли</h3>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for item in files %}
+          {% with file_url=item.auto_file.url|lower %}
+          <div class="bg-white rounded-xl border border-blue-200 shadow p-3">
+            <div class="aspect-video bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+              {% if 'mp4' in file_url or 'webm' in file_url or 'mov' in file_url or 'avi' in file_url or 'mkv' in file_url %}
+                <video src="{{ item.auto_file.url }}" class="w-full h-full object-cover" controls></video>
+              {% elif 'jpg' in file_url or 'jpeg' in file_url or 'png' in file_url or 'gif' in file_url or 'webp' in file_url %}
+                <img src="{{ item.auto_file.url }}" class="w-full h-full object-cover" alt="{{ item.name_file }}">
+              {% else %}
+                <div class="text-sm text-gray-500 p-4">Формат: {{ item.auto_file.name }}</div>
+              {% endif %}
+            </div>
+            <div class="mt-3">
+              <p class="text-sm font-medium text-gray-900 truncate">{{ item.name_file }}</p>
+              <a href="{{ item.auto_file.url }}" class="text-xs text-blue-700 hover:underline" download>Завантажити оригінал</a>
+            </div>
+          </div>
+          {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<script src="{% static 'js/load_file.js' %}"></script>
+{% endblock %}

@@ -1,12 +1,14 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import UserProfile
+from .models import UserProfile, LoadFile
+
 
 text_input_class = (
     "mt-1 block w-full rounded-md border-gray-300 shadow-sm "
     "focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
 )
+
 file_input_class = (
     "mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg "
     "cursor-pointer bg-gray-50 focus:outline-none "
@@ -15,11 +17,13 @@ file_input_class = (
     "hover:file:bg-indigo-100"
 )
 
+
 class AvatarInput(forms.ClearableFileInput):
     template_name = "django/forms/widgets/input.html"
     initial_text = ""
     input_text = ""
     clear_checkbox_label = ""
+
 
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(
@@ -70,9 +74,28 @@ class RegisterForm(forms.ModelForm):
                 UserProfile.objects.update_or_create(user=user, defaults={"avatar": avatar})
         return user
 
+
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ["avatar"]
         widgets = {"avatar": AvatarInput(attrs={"class": file_input_class, "accept": "image/*"})}
         labels = {"avatar": "Змінити аватар"}
+
+
+from django import forms
+from .models import LoadFile
+
+class LoadFileForm(forms.ModelForm):
+    class Meta:
+        model = LoadFile
+        fields = ["name_file", "auto_file"]
+        widgets = {
+            "auto_file": forms.ClearableFileInput(attrs={
+                "class": "hidden",
+                "accept": "image/*,video/*"
+            })
+        }
+        labels = {
+            "auto_file": "Файл (фото/відео)"
+        }

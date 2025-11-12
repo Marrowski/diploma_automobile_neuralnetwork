@@ -142,6 +142,28 @@ def logout_view(request):
     return redirect('base')
 
 
+def load_file(request):
+    files = LoadFile.objects.order_by("-id")
+    if request.method == 'POST':
+        form = LoadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save
+            messages.success('Файла успішно завантажено!')
+            return redirect('load')
+        else:
+            return messages.error('Перевірте правильність файлу.')
+    else:
+        form = LoadFileForm()
+
+        context = {
+            'form': form,
+            'files': files
+        }
+
+    return render(request, 'load_file.html', context)
+
+
+
 
 class AutoNumbersAPIListPagination(PageNumberPagination):
     page_size = 5

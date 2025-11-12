@@ -39,3 +39,9 @@ class Category(models.Model):
 
 class Logo(models.Model):
     logo = models.ImageField()
+
+
+class LoadFile(models.Model):
+    name_file = models.CharField(max_length=100)
+    auto_file = models.FileField()
+

@@ -40,7 +40,8 @@ urlpatterns = [
     path('register/', register_view, name='register'),
     path('profile/', user_profile, name='profile'),
     path('logout/', logout_view, name='logout'),
-    path('login/', login_view, name='login')
+    path('login/', login_view, name='login'),
+    path('load/', load_file, name='load')
 ]
 
 if settings.DEBUG:
