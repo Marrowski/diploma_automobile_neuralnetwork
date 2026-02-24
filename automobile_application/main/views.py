@@ -169,6 +169,7 @@ def load_file(request):
     return render(request, 'anpr_upload.html', context)
 
 
+@login_required
 def anpr_upload(request):
     if request.method == "POST":
         form = ANPRUploadForm(request.POST, request.FILES)
