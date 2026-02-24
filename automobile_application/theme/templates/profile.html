@@ -23,20 +23,20 @@
     <form method="post" enctype="multipart/form-data" class="space-y-4">
       {% csrf_token %}
 
-      <div class="grid grid-cols-[72px,1fr] gap-4 items-start">
+      <div class="grid grid-cols-[48px,1fr] gap-4 items-start">
         <div class="flex flex-col items-center gap-2">
 
           {% if form.instance.avatar %}
             <img id="avatarPreview" src="{{ form.instance.avatar.url }}"
-                 alt="Аватар" class="w-16 h-16 rounded-full object-cover shadow" />
+                 alt="Аватар" class="w-10 h-10 rounded-full object-cover shadow" />
 
           {% else %}
             <img id="avatarPlaceholder"
                  src="{% static 'media/user.png' %}"
                  alt="Аватар"
-                 class="w-16 h-16 rounded-full object-cover shadow" />
+                 class="w-10 h-10 rounded-full object-cover shadow" />
 
-            <img id="avatarPreview" class="w-16 h-16 rounded-full object-cover shadow hidden" alt="Прев’ю" />
+            <img id="avatarPreview" class="w-10 h-10 rounded-full object-cover shadow hidden" alt="Прев'ю" />
           {% endif %}
 
           <p class="text-[11px] text-blue-700/80 text-center">PNG/JPG, до 5&nbsp;МБ</p>

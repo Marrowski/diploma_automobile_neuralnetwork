@@ -20,7 +20,6 @@ from main.views import *
 from django.conf.urls.static import static
 from django.conf import settings
 
-from rest_framework import routers
 
 
 
@@ -28,20 +27,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     path('', main_view, name='base'),
-    path('api/v1/numbers/', AutoNumbersAPIList.as_view()),
-    path('api/v1/numbers/<int:pk>/', AutoNumbersAPIUpdate.as_view()),
-    path('api/v1/numbersdelete/<int:pk>/', AutoNumbersAPIDestroy.as_view()),
-    path('api/v1/category/', CategoryAPIList.as_view()),
-    path('api/v1/category/<int:pk>/', CategoryAPIUpdate.as_view()),
-    path('api/v1/categorydelete/<int:pk>/', CategoryAPIDestroy.as_view()),
-    path('api/v1/drf-auth/', include('rest_framework.urls')),
-    path('api/v1/auth/', include('djoser.urls')),
-    re_path(r'^auth/', include('djoser.urls.authtoken')),
     path('register/', register_view, name='register'),
     path('profile/', user_profile, name='profile'),
     path('logout/', logout_view, name='logout'),
     path('login/', login_view, name='login'),
-    path('load/', load_file, name='load')
+    path('load/', anpr_upload, name='anpr_upload')
 ]
 
 if settings.DEBUG:

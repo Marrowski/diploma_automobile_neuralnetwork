@@ -3,6 +3,9 @@ from email.policy import default
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.contrib.postgres.fields import ArrayField
+from django.contrib.auth import get_user_model
+
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
@@ -45,3 +48,16 @@ class LoadFile(models.Model):
     name_file = models.CharField(max_length=100)
     auto_file = models.FileField()
 
+class PlateScan(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    name= models.CharField(max_length=120)
+    image = models.ImageField(upload_to="scans/images/", blank=True, null=True)
+    video = models.FileField(upload_to="scans/videos/", blank=True, null=True)
+    plate_texts = ArrayField(models.CharField(max_length=16), default=list, blank=True)
+    is_ukrainian = models.BooleanField(default=False)
+    raw_bboxes = models.JSONField(default=list, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        src = 'video' if self.video else 'image'
+        return f'{self.id}:{src}:{self.name or ''}'

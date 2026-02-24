@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import UserProfile, LoadFile
+from .models import UserProfile, LoadFile, PlateScan
 
 
 text_input_class = (
@@ -99,3 +99,11 @@ class LoadFileForm(forms.ModelForm):
         labels = {
             "auto_file": "Файл (фото/відео)"
         }
+
+
+class ANPRUploadForm(forms.Form):
+    file = forms.FileField(
+        label="Фото або відео",
+        help_text="Підтримка: JPG/PNG/JPEG, MP4/MOV/AVI",
+        widget=forms.ClearableFileInput(attrs={"accept": "image/*,video/*"})
+    )

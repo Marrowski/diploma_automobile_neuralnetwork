@@ -2,24 +2,22 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.forms import model_to_dict
+from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.authentication import TokenAuthentication
-from rest_framework import generics, viewsets
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, IsAuthenticated
-from .permissions import *
+from django.conf import settings
 
 from .models import *
 from .forms import *
-from .serializers import *
 
 import requests
+import os
 
+from .forms import ANPRUploadForm
+from .models import PlateScan
+from django.core.files.storage import default_storage
+import mimetypes
+from anpr.detector import anpr_infer_image_path, anpr_infer_video_path
 
 def main_view(request):
     url = 'https://russianwarship.rip/api/v2/statistics/latest/'
@@ -147,7 +145,7 @@ def load_file(request):
     if request.method == 'POST':
         form = LoadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save
+            form.save()
             messages.success('Файла успішно завантажено!')
             return redirect('load')
         else:
@@ -160,58 +158,90 @@ def load_file(request):
             'files': files
         }
 
-    return render(request, 'load_file.html', context)
+    return render(request, 'anpr_upload.html', context)
 
 
+def anpr_upload(request):
+    if request.method == "POST":
+        form = ANPRUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            f = form.cleaned_data["file"]
 
+            name = default_storage.save(f"anpr_uploads/{f.name}", ContentFile(f.read()))
+            path = default_storage.path(name)
 
-class AutoNumbersAPIListPagination(PageNumberPagination):
-    page_size = 5
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+            ctype, _ = mimetypes.guess_type(f.name)
+            is_image = (ctype or "").startswith("image/")
+            is_video = (ctype or "").startswith("video/")
 
+            try:
+                if is_image:
+                    result = anpr_infer_image_path(path)
+                elif is_video:
+                    result = anpr_infer_video_path(path)
+                else:
+                    messages.error(request, "Невідомий тип файлу. Завантажте фото або відео.")
+                    return redirect("anpr_upload")
+            except Exception as e:
+                messages.error(request, f"Помилка під час обробки: {e}")
+                return redirect("anpr_upload")
 
-class CategoryAPIListPagination(PageNumberPagination):
-    page_size = 2
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+            if "error" in result:
+                messages.error(request, result["error"])
+                return redirect("anpr_upload")
 
+            accepted = bool(result.get("accepted"))
+            plates = result.get("plates", [])
 
-class AutoNumbersAPIList(generics.ListCreateAPIView):
-    queryset = AutoNumbers.objects.all()
-    serializer_class = AutoNumbersSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
-    pagination_class = AutoNumbersAPIListPagination
+            normalized = []
+            for p in plates:
+                if isinstance(p, dict):
+                    normalized.append({
+                        "text": p.get("text", ""),
+                        "is_ua": bool(p.get("is_ua")),
+                        "score": p.get("score"),
+                    })
+                else:
+                    normalized.append({"text": str(p), "is_ua": None, "score": None})
 
+            if request.user.is_authenticated:
+                plate_texts = [p["text"] for p in normalized if p["text"]]
+                raw_bboxes = [p.get("bbox", []) for p in result.get("plates", []) if isinstance(p, dict)]
 
-class AutoNumbersAPIUpdate(generics.RetrieveUpdateAPIView):
-    queryset = AutoNumbers.objects.all()
-    serializer_class = AutoNumbersSerializer
-    permission_classes = (IsAuthenticated, )
-    # authentication_classes = (TokenAuthentication, )
+                scan = PlateScan(
+                    owner=request.user,
+                    name=f.name,
+                    plate_texts=plate_texts,
+                    is_ukrainian=accepted,
+                    raw_bboxes=raw_bboxes,
+                )
 
+                if is_image:
+                    scan.image.name = name
+                elif is_video:
+                    scan.video.name = name
 
-class AutoNumbersAPIDestroy(generics.RetrieveDestroyAPIView):
-    queryset = AutoNumbers.objects.all()
-    serializer_class = AutoNumbersSerializer
-    permission_classes = (IsAdminOrReadOnly, )
+                scan.save()
 
+                for p in normalized:
+                    if p["text"]:
+                        AutoNumbers.objects.create(
+                            user=request.user,
+                            numbers=p["text"][:8],
+                            is_allowed=bool(p.get("is_ua")),
+                        )
 
-class CategoryAPIList(generics.ListCreateAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
-    pagination_class = CategoryAPIListPagination
+            context = {
+                "form": ANPRUploadForm(),
+                "uploaded_rel": name,
+                "is_image": is_image,
+                "is_video": is_video,
+                "accepted": accepted,
+                "plates": normalized,
+            }
+            return render(request, "anpr_upload.html", context)
 
+    else:
+        form = ANPRUploadForm()
 
-class CategoryAPIUpdate(generics.RetrieveUpdateAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = (IsAuthenticated, )
-    # authentication_classes = (TokenAuthentication, )
-
-
-class CategoryAPIDestroy(generics.RetrieveDestroyAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    return render(request, "anpr_upload.html", {"form": form})
