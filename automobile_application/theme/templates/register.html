@@ -1,98 +1,186 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}Реєстрація{% endblock %}
 
+{# Прибираємо зайві блоки з хедера, якщо вони там є #}
+{% block header_extra %}{% endblock %}
+
 {% block content %}
-  {% block header_extra %}{% endblock %}
+  <div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 animate-fade-in-up">
 
-  <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-white">
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 space-y-6 border border-gray-200">
+    <div class="max-w-md w-full bg-white dark:bg-slate-800 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-100 dark:border-slate-700 overflow-hidden relative">
 
-      {% if messages %}
-        <div class="space-y-2">
-          {% for message in messages %}
-            <div class="rounded-lg px-4 py-3 text-sm
-                        {% if 'success' in message.tags %} bg-blue-50 text-blue-900 border border-blue-200
-                        {% elif 'error' in message.tags %} bg-red-50 text-red-900 border border-red-200
-                        {% else %} bg-gray-50 text-gray-800 border border-gray-200 {% endif %}">
-              {{ message }}
-            </div>
-          {% endfor %}
+      <div class="h-1.5 w-full bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+
+      <div class="p-8">
+
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Створення акаунту
+          </h2>
+          <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            Долучайтесь до системи безпеки вже сьогодні
+          </p>
         </div>
-      {% endif %}
 
-      <h2 class="text-2xl font-bold text-center text-gray-800">Реєстрація</h2>
-
-      <form class="space-y-5" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+        {% if messages %}
+          <div class="space-y-3 mb-6">
+            {% for message in messages %}
+              <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm border shadow-sm
+                          {% if 'success' in message.tags %} bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800
+                          {% elif 'error' in message.tags %} bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border-red-200 dark:border-red-800
+                          {% else %} bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 {% endif %}">
+                {% if 'error' in message.tags %}
+                   <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                {% else %}
+                   <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                {% endif %}
+                <span>{{ message }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
 
         {% if form.non_field_errors %}
-          <div class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+          <div class="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-300">
             {{ form.non_field_errors }}
           </div>
         {% endif %}
 
-        <div>
-          <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Логін</label>
-          {{ form.username }}
-          {% if form.username.errors %}
-            <p class="mt-1 text-xs text-red-600">{{ form.username.errors.0 }}</p>
-          {% endif %}
+        <form class="space-y-5 custom-form" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <div>
+            <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Логін
+            </label>
+            <div class="relative">
+                {{ form.username }}
+            </div>
+            {% if form.username.errors %}
+              <p class="mt-1 text-xs text-red-500 font-medium">{{ form.username.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Ваше ім'я
+            </label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+              <p class="mt-1 text-xs text-red-500 font-medium">{{ form.first_name.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Ваш e-mail
+            </label>
+            {{ form.email }}
+            {% if form.email.errors %}
+              <p class="mt-1 text-xs text-red-500 font-medium">{{ form.email.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="{{ form.password.id_for_label }}" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Пароль
+            </label>
+            {{ form.password }}
+            {% if form.password.errors %}
+              <p class="mt-1 text-xs text-red-500 font-medium">{{ form.password.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="{{ form.password2.id_for_label }}" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Повторіть пароль
+            </label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+              <p class="mt-1 text-xs text-red-500 font-medium">{{ form.password2.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Фото профілю <span class="text-slate-400 font-normal">(необов'язково)</span>
+            </label>
+
+            <div class="relative">
+                 <input type="file" name="{{ form.profile_picture.name }}" id="{{ form.profile_picture.id_for_label }}"
+                        class="block w-full text-sm text-slate-500 dark:text-slate-400
+                               file:mr-4 file:py-2.5 file:px-4
+                               file:rounded-full file:border-0
+                               file:text-sm file:font-semibold
+                               file:bg-blue-50 file:text-blue-700
+                               hover:file:bg-blue-100
+                               dark:file:bg-slate-700 dark:file:text-blue-400
+                               dark:hover:file:bg-slate-600
+                               cursor-pointer transition-colors" />
+            </div>
+
+            {% if form.profile_picture.errors %}
+              <p class="mt-1 text-xs text-red-500 font-medium">{{ form.profile_picture.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <button type="submit"
+                  class="w-full flex justify-center py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/30 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-blue-500/50 mt-6">
+            Зареєструватися
+          </button>
+        </form>
+
+        <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700 text-center">
+          <p class="text-sm text-slate-600 dark:text-slate-400">
+            Вже маєте аккаунт?
+            <a href="{% url 'login' %}" class="font-bold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+              Увійти в систему
+            </a>
+          </p>
         </div>
-
-        <div>
-          <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Ваше ім'я</label>
-          {{ form.first_name }}
-          {% if form.first_name.errors %}
-            <p class="mt-1 text-xs text-red-600">{{ form.first_name.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div>
-          <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Ваш e-mail</label>
-          {{ form.email }}
-          {% if form.email.errors %}
-            <p class="mt-1 text-xs text-red-600">{{ form.email.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div>
-          <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
-          {{ form.password }}
-          {% if form.password.errors %}
-            <p class="mt-1 text-xs text-red-600">{{ form.password.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div>
-          <label for="{{ form.password2.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Повторіть пароль</label>
-          {{ form.password2 }}
-          {% if form.password2.errors %}
-            <p class="mt-1 text-xs text-red-600">{{ form.password2.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <div>
-          <label for="{{ form.profile_picture.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-            Фото профілю (необов'язково)
-          </label>
-          {{ form.profile_picture }}
-          {% if form.profile_picture.errors %}
-            <p class="mt-1 text-xs text-red-600">{{ form.profile_picture.errors.0 }}</p>
-          {% endif %}
-        </div>
-
-        <button
-          type="submit"
-          class="w-full flex justify-center py-2.5 px-4 rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-          Реєстрація
-        </button>
-      </form>
-
-      <p class="text-center text-sm text-gray-600">
-        Вже маєте аккаунт?
-        <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-800 font-medium transition">Увійти</a>
-      </p>
+      </div>
     </div>
   </div>
+
+  <style>
+      .custom-form input[type="text"],
+      .custom-form input[type="email"],
+      .custom-form input[type="password"] {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border-radius: 0.75rem; /* rounded-xl */
+          border-width: 1px;
+          outline: none;
+          transition: all 0.2s;
+          /* Світла тема */
+          background-color: #fff;
+          border-color: #cbd5e1; /* slate-300 */
+          color: #0f172a; /* slate-900 */
+      }
+
+      .custom-form input[type="text"]:focus,
+      .custom-form input[type="email"]:focus,
+      .custom-form input[type="password"]:focus {
+          border-color: #3b82f6; /* blue-500 */
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+      }
+
+      /* Темна тема */
+      .dark .custom-form input[type="text"],
+      .dark .custom-form input[type="email"],
+      .dark .custom-form input[type="password"] {
+          background-color: #0f172a; /* slate-900 */
+          border-color: #334155; /* slate-700 */
+          color: #f1f5f9; /* slate-100 */
+      }
+
+      .dark .custom-form input[type="text"]:focus,
+      .dark .custom-form input[type="email"]:focus,
+      .dark .custom-form input[type="password"]:focus {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+      }
+  </style>
 {% endblock %}

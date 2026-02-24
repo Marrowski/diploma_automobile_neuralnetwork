@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.forms import model_to_dict
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+
 
 from .models import *
 from .forms import *
@@ -96,7 +97,6 @@ def register_view(request):
 
     return render(request, "register.html", context)
 
-
 @login_required
 def user_profile(request):
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
@@ -104,18 +104,26 @@ def user_profile(request):
     if request.method == "POST":
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
+            name = form.cleaned_data.get("name")
+            pwd = form.cleaned_data.get("password")
+
+            if name is not None:
+                request.user.first_name = name
+            if pwd:
+                request.user.set_password(pwd)
+
+            request.user.save()
             form.save()
-            messages.success(request, "Профіль оновлено.")
+
+            if pwd:
+                update_session_auth_hash(request, request.user)
+
+            messages.success(request, "Профіль оновлено")
             return redirect("profile")
-        messages.error(request, "Перевірте поля форми.")
     else:
         form = UserProfileForm(instance=profile)
 
-    context = {
-        'form': form
-    }
-    return render(request, "profile.html", context)
-
+    return render(request, "profile.html", {"form": form})
 
 def login_view(request):
     if request.method == 'POST':

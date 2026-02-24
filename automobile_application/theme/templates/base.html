@@ -1,188 +1,237 @@
 {% load static tailwind_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk" class="scroll-smooth">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>{% block title %}Car Detector System{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     {% tailwind_css %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
+
+    <script>
+      // Миттєве встановлення теми
+      if (localStorage.getItem('theme') === 'dark' ||
+         (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body class="min-h-screen flex flex-col bg-white text-blue-900">
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
 
-    <header style="background-color: oklch(78.9% 0.154 211.53);" class="text-white shadow-md">
-        <div class="container mx-auto flex items-center justify-between px-4 py-3">
-             <div class="w-6 h-4 flex items-center justify-center overflow-hidden">
-                <a href="{% url 'base' %}" target="_blank" class="block">
-                    <img src="/media/logo.png" alt="Car Detector Logo" class="h-3.5 w-auto object-contain hover:opacity-90 transition">
-                </a>
+    <header class="sticky top-0 z-50 w-full backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors duration-300">
+
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+
+                <div class="flex items-center gap-3">
+                    <a href="{% url 'base' %}" class="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/20 hover:scale-105 transition-transform duration-200 group">
+                        <img src="/media/logo.png" alt="Logo" class="w-6 h-6 object-contain brightness-0 invert group-hover:rotate-12 transition-transform duration-300">
+                    </a>
+                    <a href="{% url 'base' %}" class="hidden sm:block text-lg font-bold tracking-tight text-slate-800 dark:text-white">
+                        Свій/Чужий
+                    </a>
+                </div>
+
+                <nav class="flex items-center gap-2 sm:gap-4">
+
+                    <button id="themeToggle" class="p-2.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50" aria-label="Toggle Theme">
+                        <svg class="w-5 h-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <svg class="w-5 h-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.005 9.005 0 0012 21a9.005 9.005 0 008.354-5.646z" />
+                        </svg>
+                    </button>
+
+                    {% if user.is_authenticated %}
+                        <div class="relative">
+                            <button id="userMenuButton" type="button"
+                                    class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-slate-800 transition-all shadow-sm focus:outline-none cursor-pointer">
+                                {% if prof_pic and prof_pic.avatar %}
+                                    <img src="{{ prof_pic.avatar.url }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-slate-100 dark:ring-slate-700">
+                                {% else %}
+                                    <img src="/media/avatars/user.png" alt="Avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-slate-100 dark:ring-slate-700">
+                                {% endif %}
+
+                                <span class="text-sm font-medium hidden md:block max-w-[100px] truncate text-slate-700 dark:text-slate-200 select-none">
+                                    {{ user.first_name|default:user.username }}
+                                </span>
+
+                                <svg class="w-4 h-4 text-slate-400 transition-transform duration-200"
+                                     id="userMenuArrowIcon"
+                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <div id="userMenu"
+                                 class="hidden absolute right-0 top-full mt-2 w-64 origin-top-right bg-white dark:bg-slate-800 rounded-2xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 z-[9999]">
+                                <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 rounded-t-2xl">
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ user.first_name|default:user.username }}</p>
+                                    {% if user.email %}
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user.email }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="p-2 flex flex-col gap-1">
+                                    <a href="{% url 'profile' %}"
+                                       class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors">
+                                        Мій профіль
+                                    </a>
+                                    <form method="post" action="{% url 'logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors text-left">
+                                            Вийти з системи
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:scale-95">
+                          Вхід / Реєстрація
+                        </a>
+                    {% endif %}
+                </nav>
             </div>
-
-            <a href="{% url 'base' %}" target="_blank"
-             class="text-2xl font-semibold text-white hover:text-blue-200 transition">
-            Інтегрована система свій/чужий
-            </a>
-            <nav class="relative flex items-center gap-3">
-    {% if user.is_authenticated %}
-        <button id="userMenuButton" type="button" class="block rounded-full outline-none ring-0 focus:ring-2 focus:ring-white/60" aria-haspopup="true" aria-expanded="false">
-            {% if prof_pic and prof_pic.avatar %}
-                <img src="{{ prof_pic.avatar.url }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-white hover:scale-105 transition duration-200">
-            {% else %}
-                <img src="/media/avatars/user.png" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-white hover:scale-105 transition duration-200">
-            {% endif %}
-        </button>
-
-    <span id="userMenuArrow"
-          class="hidden absolute right-2 top-[calc(100%+2px)] h-3 w-3 bg-white rotate-45 shadow z-[9998]"></span>
-
-    <div id="userMenu"
-         class="hidden absolute right-0 top-[calc(100%+0.5rem)] w-56 origin-top-right
-                rounded-xl bg-white/95 backdrop-blur text-gray-800 shadow-xl ring-1 ring-black/5
-                z-[9999] overflow-hidden">
-
-      <div class="px-4 py-3 flex items-center gap-3 bg-gradient-to-r from-blue-50 to-white">
-      {% if prof_pic and prof_pic.avatar %}
-            <img src="{{ prof_pic.avatar.url }}" class="w-9 h-9 rounded-full object-cover border border-blue-100" alt="">
-        {% else %}
-            <img src="/media/avatars/user.png" class="w-9 h-9 rounded-full object-cover border border-blue-100" alt="">
-        {% endif %}
-        <div class="min-w-0">
-            <p class="text-sm font-semibold truncate">{{ user.get_full_name|default:user.username }}</p>
-            {% if user.email %}
-                <p class="text-xs text-gray-500 truncate">{{ user.email }}</p>
-            {% endif %}
         </div>
-    </div>
 
-      <div class="h-px bg-gray-100"></div>
+        {% block header_extra %}
+        <div class="border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/50 backdrop-blur-sm">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="relative flex h-2.5 w-2.5">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                    </span>
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Оперативні дані: Втрати ворога</h2>
+                </div>
 
-      <a href="{% url 'profile' %}"
-         class="flex items-center gap-2 px-4 py-2.5 hover:bg-blue-50">
-        <svg class="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-3.8 0-6.5 1.9-6.5 4v.5A1.5 1.5 0 0 0 7 20h10a1.5 1.5 0 0 0 1.5-1.5V18c0-2.1-2.7-4-6.5-4Z"/>
-        </svg>
-        Профіль
-      </a>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center text-center group hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
+                        <span class="text-2xl font-black text-slate-800 dark:text-white tabular-nums">{{ units }}</span>
+                        <span class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 mt-1">Особовий склад</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center text-center group hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
+                        <span class="text-2xl font-black text-slate-800 dark:text-white tabular-nums">{{ tanks }}</span>
+                        <span class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 mt-1">Танки</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center text-center group hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
+                        <span class="text-2xl font-black text-slate-800 dark:text-white tabular-nums">{{ afv }}</span>
+                        <span class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 mt-1">ББМ</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center text-center group hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
+                        <span class="text-2xl font-black text-slate-800 dark:text-white tabular-nums">{{ art }}</span>
+                        <span class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 mt-1">Арт. Системи</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center text-center group hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
+                        <span class="text-2xl font-black text-slate-800 dark:text-white tabular-nums">{{ planes }}</span>
+                        <span class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 mt-1">Літаки</span>
+                    </div>
+                     <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center text-center group hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
+                        <span class="text-2xl font-black text-slate-800 dark:text-white tabular-nums">{{ uav }}</span>
+                        <span class="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 mt-1">БПЛА</span>
+                    </div>
+                </div>
 
-      <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit"
-                class="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-red-50">
-          <svg class="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M16 17v2a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v2h-2V5a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2zm2.586-8L16 6.414 17.414 5 22 9.586 17.414 14 16 12.586 18.586 10H9V8z"/>
-          </svg>
-          Вихід
-        </button>
-      </form>
-    </div>
-    {% else %}
-        <a href="{% url 'register' %}" class="text-blue-100 hover:text-white transition text-sm">
-          Вхід / Реєстрація
-        </a>
-    {% endif %}
-        </nav>
-    </div>
-
-    {% block header_extra %}
-        <div class="container mx-auto px-4 pb-4">
-            <h2 class="text-lg font-semibold mb-2">Втрати росії проти України</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 text-center text-sm">
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{units}}</div>
-                    <div class="opacity-80">особовий склад</div>
-                </div>
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{tanks}}</div>
-                    <div class="opacity-80">танки</div>
-                </div>
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{afv}}</div>
-                    <div class="opacity-80">ББМ</div>
-                </div>
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{art}}</div>
-                    <div class="opacity-80">арт. системи</div>
-                </div>
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{mlrs}}</div>
-                    <div class="opacity-80">РСЗВ</div>
-                </div>
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{aaws}}</div>
-                    <div class="opacity-80">ППО</div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-3 text-center text-sm">
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{planes}}</div>
-                    <div class="opacity-80">літаки</div>
-                </div>
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{heli}}</div>
-                    <div class="opacity-80">гелікоптери</div>
-                </div>
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{uav}}</div>
-                    <div class="opacity-80">БПЛА</div>
-                </div>
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{cm}}</div>
-                    <div class="opacity-80">підводні човни</div>
-                </div>
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{vft}}</div>
-                    <div class="opacity-80">кораблі</div>
-                </div>
-                <div class="bg-blue-900/20 rounded-md p-2">
-                    <div class="text-xl font-bold">{{atgm}}</div>
-                    <div class="opacity-80">техніка/засоби</div>
+                <div class="flex flex-wrap justify-center gap-2 mt-3 opacity-80">
+                     <span class="px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded text-[10px] font-bold text-slate-600 dark:text-slate-400">РСЗВ: {{ mlrs }}</span>
+                     <span class="px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded text-[10px] font-bold text-slate-600 dark:text-slate-400">ППО: {{ aaws }}</span>
+                     <span class="px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded text-[10px] font-bold text-slate-600 dark:text-slate-400">Гелікоптери: {{ heli }}</span>
+                     <span class="px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded text-[10px] font-bold text-slate-600 dark:text-slate-400">Кораблі: {{ vft }}</span>
+                     <span class="px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded text-[10px] font-bold text-slate-600 dark:text-slate-400">Автотехніка: {{ atgm }}</span>
                 </div>
             </div>
         </div>
-    {% endblock %}
+        {% endblock %}
     </header>
 
-    <main class="flex-grow container mx-auto px-4 py-12 flex flex-col items-center">
+    <main class="flex-grow container mx-auto px-4 py-12 flex flex-col items-center relative z-0">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-[500px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+
         {% block content %}
-        <div class="flex flex-col md:flex-row gap-6 w-full max-w-5xl">
-            <div class="flex-1 bg-blue-100 rounded-lg shadow-md p-6 flex flex-col justify-between min-h-[200px]">
-                <h2 class="text-xl font-semibold mb-2">Швидка робота</h2>
-                <p class="text-blue-800 flex-grow">
-                    Наша система працює миттєво — розпізнавання номерного знаку виконується за лічені мілісекунди. Завдяки оптимізованим алгоритмам та сучасним нейронним мережам ми
-                     забезпечуємо блискавичну обробку даних навіть при великому потоці транспорту. Більше ніяких черг чи затримок — лише точність і швидкість..
+
+        <div class="text-center max-w-3xl mb-16 animate-fade-in-up">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight tracking-tight">
+                Інтелектуальна система <br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">контролю доступу</span>
+            </h1>
+            <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                Автоматизоване розпізнавання номерних знаків, аналітика в реальному часі та миттєве виявлення загроз.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 w-full max-w-6xl mb-12">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 hover:-translate-y-1 transition-all duration-300">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6 text-blue-600 dark:text-blue-400">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Швидка робота</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                    Розпізнавання за лічені мілісекунди. Завдяки оптимізованим алгоритмам ми забезпечуємо блискавичну обробку даних навіть при великому потоці.
                 </p>
             </div>
-            <div class="flex-1 bg-blue-100 rounded-lg shadow-md p-6 flex flex-col justify-between min-h-[200px]">
-                <h2 class="text-xl font-semibold mb-2">Чому саме ми?</h2>
-                <p class="text-blue-800 flex-grow">
-                    Висока точність: Нейромережа навченa на мільйонах зразків, що гарантує коректне визначення навіть складних номерів.
-                    Гнучка інтеграція: Легко підключається до існуючих систем контролю доступу.
-                    Надійність: Наші сервери забезпечують безперебійну роботу 24/7 та захищені від збоїв.
-                    Підтримка: Ми супроводжуємо клієнта на кожному етапі — від впровадження до технічної підтримки.
+
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center mb-6 text-indigo-600 dark:text-indigo-400">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Висока точність</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                    Нейромережа навчена на мільйонах зразків. 99.9% точність визначення навіть забруднених чи складних номерних знаків.
                 </p>
             </div>
-            <div class="flex-1 bg-blue-100 rounded-lg shadow-md p-6 flex flex-col justify-between min-h-[200px]">
-                <h2 class="text-xl font-semibold mb-2">Долучайся зараз</h2>
-                <p class="text-blue-800 flex-grow">
-                    Стань частиною сучасної системи безпеки вже сьогодні!
-                    Зареєструйся, підключи свої камери та автоматизуй контроль в’їзду й виїзду.
-                    Надійний контроль — це просто, коли за справу береться штучний інтелект.
+
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 hover:-translate-y-1 transition-all duration-300">
+                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-6 text-purple-600 dark:text-purple-400">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Надійність та Безпека</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                    Захищені сервери, аптайм 24/7. Легка інтеграція з існуючими системами безпеки та шлагбаумами.
                 </p>
             </div>
         </div>
 
-        <a href="{% url 'anpr_upload' %}"
-           class="mt-8 inline-block px-6 py-3 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors duration-200">
-          Почати
-        </a>
+        <div class="text-center">
+             <a href="{% url 'anpr_upload' %}"
+               class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-blue-600 rounded-full hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/40 focus:outline-none focus:ring-4 focus:ring-blue-500/30 hover:-translate-y-0.5">
+               <span>Розпочати роботу</span>
+               <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-4-4m4 4H6"></path></svg>
+            </a>
+            <p class="mt-4 text-sm text-slate-400">Реєстрація займає менше хвилини</p>
+        </div>
 
         {% endblock %}
     </main>
 
-    <footer style="background-color: oklch(78.9% 0.154 211.53);" class="text-white text-center py-4 mt-auto">
-        &copy; 2025 Інтегровна система свій/чужий. Всі права захищені.
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-auto">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
+                    <img src="/media/logo.png" alt="Logo" class="w-5 h-5 grayscale">
+                    <span class="text-sm font-medium text-slate-600 dark:text-slate-400">© 2025 Car Detector System</span>
+                </div>
+                <div class="flex gap-6 text-sm text-slate-500 dark:text-slate-400">
+                    <a href="#" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Правила</a>
+                    <a href="#" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Конфіденційність</a>
+                    <a href="#" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Контакти</a>
+                </div>
+            </div>
+        </div>
     </footer>
 
     {% if debug %}
@@ -190,6 +239,36 @@
     {% endif %}
 
     <script src="{% static 'js/profile.js' %}"></script>
+
+    <script>
+    function toggleUserMenu(event) {
+        if (event) event.stopPropagation();
+        const menu = document.getElementById('userMenu');
+        if (menu) {
+            menu.classList.toggle('hidden');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('userMenu');
+            const btn = document.getElementById('userMenuButton');
+
+            if (menu && !menu.classList.contains('hidden') && btn && !btn.contains(event.target) && !menu.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        const themeBtn = document.getElementById('themeToggle');
+        if (themeBtn) {
+            themeBtn.addEventListener('click', function() {
+                document.documentElement.classList.toggle('dark');
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            });
+        }
+    });
+</script>
 
 </body>
 </html>

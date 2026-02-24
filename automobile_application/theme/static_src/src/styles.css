@@ -1,10 +1,33 @@
 @import "tailwindcss";
 
-/**
-  * A catch-all path to Django template files, JavaScript, and Python files
-  * that contain Tailwind CSS classes and will be scanned by Tailwind to generate the final CSS file.
-  *
-  * If your final CSS file is not being updated after code changes, you may want to broaden or narrow
-  * the scope of this path.
-  */
-@source "../../../**/*.{html,py,js}";
+/* ВАЖЛИВО: Вказуємо шлях до шаблонів Django.
+   Ми знаходимось у theme/static_src/src/styles.css, тому виходимо на 3 рівні вгору.
+*/
+@source "../../../**/*.html";
+@source "../../../../templates";
+@source "../../../../**/templates";
+
+@theme {
+  /* Додаємо шрифт Inter */
+  --font-sans: "Inter", sans-serif;
+
+  /* Налаштування кольорів (якщо раптом v4 не підтягне slate автоматично) */
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
+}
+
+/* Примусово вмикаємо темну тему через клас 'dark'.
+   За замовчуванням v4 дивиться на налаштування системи, а цей рядок
+   дозволяє перемикати тему кнопкою JS.
+*/
+@variant dark (&:where(.dark, .dark *));
+
+/* Додаткові утиліти (скролбар тощо)
+   У v4 це робиться через @utility
+*/
+@utility scrollbar-hide {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

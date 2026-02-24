@@ -76,15 +76,77 @@ class RegisterForm(forms.ModelForm):
 
 
 class UserProfileForm(forms.ModelForm):
+    common_classes = (
+        "w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-gray-900 "
+        "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all "
+        "dark:bg-slate-900 dark:border-slate-700 dark:text-white dark:placeholder-slate-500 "
+        "dark:focus:border-blue-500"
+    )
+
+    name = forms.CharField(
+        max_length=150,
+        required=False,
+        label="Ім'я",
+        widget=forms.TextInput(attrs={
+            "class": common_classes,
+            "placeholder": "Ваше ім'я"
+        }),
+    )
+
+    password = forms.CharField(
+        required=False,
+        label="Новий пароль",
+        widget=forms.PasswordInput(attrs={
+            "class": common_classes,
+            "placeholder": "••••••••"
+        }),
+    )
+
+    confirm_password = forms.CharField(
+        required=False,
+        label="Підтвердити пароль",
+        widget=forms.PasswordInput(attrs={
+            "class": common_classes,
+            "placeholder": "••••••••"
+        }),
+    )
+
     class Meta:
         model = UserProfile
         fields = ["avatar"]
         widgets = {"avatar": AvatarInput(attrs={"class": file_input_class, "accept": "image/*"})}
         labels = {"avatar": "Змінити аватар"}
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        if self.user:
+            self.fields["name"].initial = self.user.first_name
 
-from django import forms
-from .models import LoadFile
+    def clean(self):
+        cleaned = super().clean()
+        pwd = cleaned.get("password")
+        confirm = cleaned.get("confirm_password")
+        if pwd or confirm:
+            if pwd != confirm:
+                raise forms.ValidationError("Паролі не збігаються")
+            if len(pwd) < 8:
+                raise forms.ValidationError("Пароль має бути не менше 8 символів")
+        return cleaned
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        if self.user:
+            name = self.cleaned_data.get("name")
+            pwd = self.cleaned_data.get("password")
+            if name is not None:
+                self.user.first_name = name
+            if pwd:
+                self.user.set_password(pwd)
+            if commit:
+                self.user.save()
+                profile.save()
+        return profile
 
 class LoadFileForm(forms.ModelForm):
     class Meta:
