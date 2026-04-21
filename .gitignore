@@ -215,3 +215,6 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 migrations/
+test_ocr.py
+debug_ocr.py
+yolov8n.pt
