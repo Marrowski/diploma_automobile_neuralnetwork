@@ -171,7 +171,7 @@ def _extract_best_text(ocr_results: list) -> str:
         if not txt or score < 0.1:
             continue
         t_clean = re.sub(r"[\s\-]", "", txt).upper()
-        if t_clean == "UA":
+        if t_clean in {"UA", "AU"}:
             continue
         all_texts.append((txt, score))
 
@@ -272,6 +272,9 @@ def _ocr_best_text_from_region(region_bgr: np.ndarray) -> str:
         if is_ukrainian_plate(best_txt):
             break
 
+    # Discard results too short to be any plate format (min 4 chars)
+    if best_txt and len(best_txt) < 4:
+        return ""
     return best_txt
 
 
@@ -307,7 +310,7 @@ def anpr_infer(image_bgr: np.ndarray) -> Dict:
         return {"error": "LPD model not loaded."}
 
     H, W = image_bgr.shape[:2]
-    plate_boxes = _find_plate_regions(image_bgr, conf=0.2)
+    plate_boxes = _find_plate_regions(image_bgr, conf=0.5)
 
     results = {"plates": [], "accepted": False}
 
