@@ -23,7 +23,7 @@
     input.addEventListener('change', (e)=>{
       const f = e.target.files && e.target.files[0];
       if(f && info){ info.textContent = f.name; info.classList.remove('hidden'); }
-      // взаємовиключення: якщо обрав фото — чистимо відео, і навпаки
+
       if(input === imgInput && vidInput){ vidInput.value = ""; if(vidInfo) vidInfo.classList.add('hidden'); }
       if(input === vidInput && imgInput){ imgInput.value = ""; if(imgInfo) imgInfo.classList.add('hidden'); }
     });

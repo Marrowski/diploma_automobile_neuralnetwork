@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
 
     <script>
-      // Миттєве встановлення теми
       if (localStorage.getItem('theme') === 'dark' ||
          (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');

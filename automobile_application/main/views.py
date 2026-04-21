@@ -97,12 +97,29 @@ def register_view(request):
 
     return render(request, "register.html", context)
 
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
+from django.shortcuts import render, redirect
+
+
 @login_required
 def user_profile(request):
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
-        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        print("--- DEBUGGING UPLOAD ---")
+        print("FILES RECEIVED:", request.FILES)
+        print("POST DATA:", request.POST)
+
+        form = UserProfileForm(request.POST, request.FILES, instance=profile, user=request.user)
+
+        print("IS FORM VALID?:", form.is_valid())
+
+        if not form.is_valid():
+            print("FORM ERRORS:", form.errors)
+
         if form.is_valid():
             name = form.cleaned_data.get("name")
             pwd = form.cleaned_data.get("password")
@@ -121,7 +138,7 @@ def user_profile(request):
             messages.success(request, "Профіль оновлено")
             return redirect("profile")
     else:
-        form = UserProfileForm(instance=profile)
+        form = UserProfileForm(instance=profile, user=request.user)
 
     return render(request, "profile.html", {"form": form})
 
