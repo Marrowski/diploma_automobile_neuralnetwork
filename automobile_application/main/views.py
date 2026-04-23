@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash, get_user_model
 from django.forms import model_to_dict
 from django.core.files.base import ContentFile
 from django.contrib import messages
@@ -78,16 +78,23 @@ def main_view(request):
     
     return render(request, 'base.html', context)
 
+User = get_user_model()
 
 def register_view(request):
     if request.method == "POST":
-        form = RegisterForm(request.POST, request.FILES)
-        if form.is_valid():
-            new_user = form.save()
-            login(request, new_user)
-            messages.success(request, "Реєстрація успішна!")
-            return redirect("base")
-        messages.error(request, "Перевірте правильність заповнення форми.")
+        email = request.POST.get('email')
+
+        if email and User.objects.filter(email=email).exists():
+            messages.error(request, "Користувач з таким email вже існує.")
+            form = RegisterForm(request.POST, request.FILES)
+        else:
+            form = RegisterForm(request.POST, request.FILES)
+            if form.is_valid():
+                new_user = form.save()
+                login(request, new_user)
+                messages.success(request, "Реєстрація успішна!")
+                return redirect("base")
+            messages.error(request, "Перевірте правильність заповнення форми.")
     else:
         form = RegisterForm()
 
