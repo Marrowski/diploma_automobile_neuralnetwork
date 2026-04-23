@@ -21,21 +21,17 @@ _OCR = easyocr.Reader(['en'], gpu=False)
 _PLATE_CLASS_ID = {0}
 UA_LETTERS = set("ABCEHIKMOPTXY")
 
-# Non-UA letters → nearest UA letter (for letter positions)
 _NON_UA_TO_UA = {
     'D': 'O', 'F': 'E', 'G': 'C', 'J': 'I', 'L': 'I',
     'N': 'H', 'Q': 'O', 'R': 'P', 'U': 'H', 'V': 'B',
     'W': 'M', 'Z': 'X',
 }
 
-# For letter positions: digits/non-UA chars → UA letter look-alike
 _TO_LETTER = {
     '0': 'O', '1': 'I', '8': 'B', '5': 'S',
     **_NON_UA_TO_UA,
-    # Y is a valid UA letter — do not remap it
 }
 
-# For digit positions: letters → digit look-alike
 _TO_DIGIT = {
     'O': '0', 'I': '1', 'B': '8', 'S': '5',
     'G': '4', 'D': '0', 'Z': '2', 'T': '7', 'A': '4',
@@ -43,12 +39,10 @@ _TO_DIGIT = {
 
 
 def _try_fix_to_ua(text: str) -> str:
-    """Replace non-UA letters with visually similar UA equivalents."""
     return "".join(_NON_UA_TO_UA.get(c, c) for c in text)
 
 
 def _force_fit_ua(text: str) -> str:
-    """Position-aware correction: fix letter and digit positions independently."""
     if not text:
         return ""
 
@@ -162,8 +156,6 @@ def _score_plate_candidate(text: str) -> float:
 
 
 def _extract_best_text(ocr_results: list) -> str:
-    """Extract the best plate text from a raw EasyOCR result list."""
-    # Sort detections left-to-right by x-coordinate of the left edge
     ocr_results = sorted(ocr_results, key=lambda r: r[0][0][0])
 
     all_texts = []
@@ -181,21 +173,17 @@ def _extract_best_text(ocr_results: list) -> str:
     combined = " ".join(t for t, s in all_texts)
     normalized = _normalize_text(combined)
 
-    # 1. Direct match
     if is_ukrainian_plate(normalized):
         return normalized
 
-    # 2. Non-UA letter substitution
     fixed = _try_fix_to_ua(normalized)
     if is_ukrainian_plate(fixed):
         return fixed
 
-    # 3. Position-aware force-fit
     force = _force_fit_ua(normalized)
     if force:
         return force
 
-    # 4. Best individual fragment with all fixes applied
     best_txt, best_score = "", -1.0
     for txt, score in all_texts:
         t_norm = _normalize_text(txt)
@@ -222,7 +210,6 @@ def _extract_best_text(ocr_results: list) -> str:
 
 
 def _plate_text_score(txt: str) -> float:
-    """Score a candidate plate text — higher is better."""
     if not txt:
         return -1.0
     score = _score_plate_candidate(txt)
@@ -268,11 +255,9 @@ def _ocr_best_text_from_region(region_bgr: np.ndarray) -> str:
             best_score = score
             best_txt = txt
 
-        # Stop early if we already have a confirmed UA plate
         if is_ukrainian_plate(best_txt):
             break
 
-    # Discard results too short to be any plate format (min 4 chars)
     if best_txt and len(best_txt) < 4:
         return ""
     return best_txt

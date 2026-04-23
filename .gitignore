@@ -218,3 +218,5 @@ migrations/
 test_ocr.py
 debug_ocr.py
 yolov8n.pt
+anpr_uploads/
+scans/
